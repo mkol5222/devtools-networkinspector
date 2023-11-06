@@ -47,7 +47,8 @@ chrome.devtools.network.onRequestFinished.addListener(function (request) {
 
             if (jsonBody && jsonBody.query) {
                 const copyButton = document.createElement("button");
-                copyButton.textContent = "Query to clipboard";
+                const operationName = jsonBody.operationName ? jsonBody.operationName : "";
+                copyButton.textContent = `Query ${operationName} to clipboard`;
                 copyButton.addEventListener("click", function () {
                     copyTextToClipboard(jsonBody.query);
                 });
@@ -76,7 +77,12 @@ chrome.devtools.network.onRequestFinished.addListener(function (request) {
 
          
                 const responseText =  JSON.stringify(jsonBody, null, 2);
-                respBody.textContent = responseText;
+                const summary = responseText.substring(0, 100) + "...";
+                if (responseText.length > 100) {
+                    respBody.innerHTML = `<details><summary>${summary}</summary>${responseText}</details>`;
+                } else {
+                    respBody.textContent = responseText;
+                }
                 networkRequestsList.appendChild(respBody);
                 const copyButton = document.createElement("button");
                 copyButton.textContent = "Response to clipboard";
