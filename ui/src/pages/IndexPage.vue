@@ -7,8 +7,7 @@
 <script lang="ts">
 
 import NetworkRequestsComponent from 'components/NetworkRequestsComponent.vue';
-import { TouchSwipe } from 'quasar';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, } from 'vue';
 
 
 const requests = [
@@ -29,10 +28,66 @@ const requests = [
 export default defineComponent({
   name: 'IndexPage',
   components: { NetworkRequestsComponent },
+  created() {
+    console.log('created', this.$refs.netRequests);
+
+  },
   mounted() {
     console.log('mounted', this.$refs.netRequests);
     for (const req of requests) {
-      this.$refs.netRequests?.addRequest(req);
+      this.$refs.netRequests?.addRequest({ ...req, ts: Date.now() });
+
+      if (chrome?.devtools?.network) {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const thisComponent = this;
+        chrome.devtools.network.onRequestFinished.addListener(function (request) {
+          if (request.request.method === 'POST' && (request.request.url.indexOf("graphql") !== -1
+            || request.request.url.indexOf("app/threathunting/prod-gcp-apollo/") !== -1)) { // URL contains string graphql or is Threat Hunting API
+            console.log('request', request);
+
+            let parsedBody;
+
+            try {
+              parsedBody = JSON.parse(request.request.postData.text);
+            } catch (e) {
+              console.log('error parsing body', e);
+            }
+
+            const operationName = parsedBody?.operationName;
+            const graphQLQuery = parsedBody?.query;
+            const grapgQLVariables = parsedBody?.variables;
+
+            request.getContent(function (content, encoding) {
+              console.log('content', content);
+
+              let parsedResponse;
+              try {
+                parsedResponse = JSON.parse(content);
+              } catch (e) {
+                console.log('error parsing response', e);
+              }
+
+              const graphQLResponse = parsedResponse;
+
+              thisComponent.$refs.netRequests?.addRequest({
+                ts: Date.now(),
+                url: request.request.url,
+                method: request.request.method,
+                status: request.response.status,
+                statusText: request.response.statusText,
+                operationName,
+                graphQLQuery,
+                grapgQLVariables,
+                graphQLResponse
+                //graphQLQuery: request.request.postData.text,
+              });
+            });
+
+
+
+          }
+        });
+      }
     }
   },
   setup() {

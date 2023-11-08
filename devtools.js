@@ -1,4 +1,3 @@
-
 console.log('devtools.js loaded');
 
 chrome.devtools.panels.create(

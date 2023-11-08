@@ -1,9 +1,10 @@
 <template>
-  <q-card style="min-height:100vh" class="my-card bg-secondary text-white full-width">
+  <q-card style="min-height:100vh" class="my-card  text-white full-width">
     <q-card-section>
       <q-table title="Network Requests" :rows="requests" :columns="columns" row-key="name" :filter="filter">
 
         <template v-slot:body-cell-method="props">
+
           <q-td :props="props">
             <div>
               <q-badge color="purple" :label="props.value" />
@@ -13,7 +14,16 @@
             </div>
           </q-td>
         </template>
-
+        <template v-slot:body-cell-graphQLQuery="props">
+          <q-td :props="props">
+            <TruncatedText :text="JSON.stringify(props.value)" :max-chars="60"/>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-graphQLResponse="props">
+          <q-td :props="props">
+            <TruncatedText :text="JSON.stringify(props.value)" :max-chars="60"/>
+          </q-td>
+        </template>
         <template v-slot:body-cell-url="props">
           <q-td :props="props">
             <div>
@@ -23,14 +33,15 @@
 
 
               <!-- <q-badge color="blue" :label="props.value" > -->
-              <div >
-                
-                {{ props.value }}
-                <q-badge  align="middle" color="grey">
+              <div>
+
+               
+                <q-badge align="middle" color="grey">
                   <q-icon size="xs" name="file_copy" @click="copy(props.value, props.rowIndex)" />
-                <q-tooltip :hide-delay="1000" :ref="(el => storeElRef(el, props.rowIndex))" :no-parent-event="true"
-                  anchor="center left" self="center right" :offset="[5, 0]">Copied</q-tooltip>
+                  <q-tooltip :hide-delay="1000" :ref="(el => storeElRef(el, props.rowIndex))" :no-parent-event="true"
+                    anchor="center left" self="center right" :offset="[5, 0]">Copied</q-tooltip>
                 </q-badge>
+                {{ props.value }}
               </div>
               <!-- </q-badge> -->
             </div>
@@ -40,16 +51,17 @@
           </q-td>
         </template>
 
-        <template v-slot:top-right  >
+        <template v-slot:top-right>
           <div class="row q-gutter-md">
-          <q-btn @click="deleteAllRequests" size="md" round color="red" icon="delete"  />
+            <q-btn @click="deleteAllRequests" size="md" round color="red" icon="delete" />
 
-          <q-input style="width: 250px;" clearable borderless dense debounce="300" v-model="filter" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
+            <q-input style="width: 250px;" clearable borderless dense debounce="300" v-model="filter"
+              placeholder="Search">
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
         </template>
       </q-table>
     </q-card-section>
@@ -59,14 +71,17 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import TruncatedText from './TruncatedText.vue';
+
 import { copyTextToClipboard } from '../utils/clipboard';
-import { transpileModule } from 'typescript';
-import { TouchSwipe } from 'quasar';
 console.log(copyTextToClipboard);
 
 export default defineComponent({
   name: 'NetworkRequestsComponent',
-  props: [ 
+  components: {
+    TruncatedText,
+  },
+  props: [
   ],
   methods: {
     addRequest(request) {
@@ -76,7 +91,7 @@ export default defineComponent({
     deleteAllRequests() {
       this.requests = [];
       console.log('deleteAllRequests');
-    
+
     },
     storeElRef(el, rowIndex) {
       console.log('storeElRef', el)
