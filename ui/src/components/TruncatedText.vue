@@ -1,22 +1,32 @@
 <template>
     <div @click="dialog = !dialog">
         <q-dialog v-model="dialog">
-            <v-card>
-                <v-card-title>
-                    <span class="headline">Hello World</span>
-                </v-card-title>
-            {{ text  }}
-        </v-card>
+            <q-card>
+                <q-card-section>
+                    <span class="headline">Details</span>
+                </q-card-section>
+                <q-card-section>
+                    {{ text }}
+                </q-card-section>
+
+            </q-card>
         </q-dialog>
         {{ truncatedText }}
         <q-tooltip>
-            {{ text }}
+            {{ tooltipText }}
         </q-tooltip>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
+function truncateText(text: string, maxlength: number) {
+    if (text.length > maxlength) {
+        return text.substring(0, maxlength) + "...";
+    }
+    return text;
+}
 
 export default defineComponent({
     props: ["text", "maxChars"],
@@ -26,10 +36,10 @@ export default defineComponent({
     }),
     computed: {
         truncatedText() {
-            if (this.text.length > this.maxChars) {
-                return this.text.substring(0, this.maxChars) + "...";
-            }
-            return this.text;
+            return truncateText(this.text, this.maxChars);
+        },
+        tooltipText() {
+            return truncateText(this.text, 512);
         }
     }
 });

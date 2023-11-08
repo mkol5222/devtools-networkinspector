@@ -16,31 +16,26 @@
         </template>
         <template v-slot:body-cell-graphQLQuery="props">
           <q-td :props="props">
-            <TruncatedText :text="JSON.stringify(props.value)" :max-chars="60"/>
+            <div class="row q-gutter-md">
+              <CopyTextButton :text="props.value" />
+              <TruncatedText :text="props.value" :max-chars="60" />
+            </div>
           </q-td>
         </template>
         <template v-slot:body-cell-graphQLResponse="props">
           <q-td :props="props">
-            <TruncatedText :text="JSON.stringify(props.value)" :max-chars="60"/>
+            <div class="row q-gutter-md">
+              <CopyTextButton :text="JSON.stringify(props.value, null, 2)" />
+              <TruncatedText :text="JSON.stringify(props.value, null, 2)" :max-chars="60" />
+            </div>
           </q-td>
         </template>
         <template v-slot:body-cell-url="props">
           <q-td :props="props">
             <div>
-
-
-
-
-
               <!-- <q-badge color="blue" :label="props.value" > -->
               <div>
-
-               
-                <q-badge align="middle" color="grey">
-                  <q-icon size="xs" name="file_copy" @click="copy(props.value, props.rowIndex)" />
-                  <q-tooltip :hide-delay="1000" :ref="(el => storeElRef(el, props.rowIndex))" :no-parent-event="true"
-                    anchor="center left" self="center right" :offset="[5, 0]">Copied</q-tooltip>
-                </q-badge>
+                <CopyTextButton :text="props.value" />
                 {{ props.value }}
               </div>
               <!-- </q-badge> -->
@@ -72,14 +67,13 @@
 import { defineComponent } from 'vue';
 
 import TruncatedText from './TruncatedText.vue';
+import CopyTextButton from './CopyTextButton.vue';
 
-import { copyTextToClipboard } from '../utils/clipboard';
-console.log(copyTextToClipboard);
 
 export default defineComponent({
   name: 'NetworkRequestsComponent',
   components: {
-    TruncatedText,
+    TruncatedText, CopyTextButton
   },
   props: [
   ],
@@ -93,21 +87,8 @@ export default defineComponent({
       console.log('deleteAllRequests');
 
     },
-    storeElRef(el, rowIndex) {
-      console.log('storeElRef', el)
-      this.copiedTooltips[rowIndex] = el;
-    },
-    copy(text: string, rowIndex) {
-      copyTextToClipboard(text);
-      console.log('tooltip', this.copiedTooltips?.[rowIndex])
-      const tooltip = this.copiedTooltips?.[rowIndex];
-      tooltip?.show();
-      setTimeout(() => {
-        tooltip?.hide();
-      }, 1000);
-      // this.copiedTooltip[rowIndex].show();
-      // this.showCopied(rowIndex);
-    },
+
+
 
   },
   data: () => ({
