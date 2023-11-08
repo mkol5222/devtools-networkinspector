@@ -55,7 +55,7 @@ export default defineComponent({
 
             const operationName = parsedBody?.operationName;
             const graphQLQuery = parsedBody?.query;
-            const grapgQLVariables = parsedBody?.variables;
+            const graphQLVariables = parsedBody?.variables;
 
             request.getContent(function (content, encoding) {
               console.log('content', content);
@@ -77,7 +77,7 @@ export default defineComponent({
                 statusText: request.response.statusText,
                 operationName,
                 graphQLQuery,
-                grapgQLVariables,
+                graphQLVariables,
                 graphQLResponse
                 //graphQLQuery: request.request.postData.text,
               });

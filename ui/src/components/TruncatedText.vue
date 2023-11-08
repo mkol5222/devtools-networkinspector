@@ -1,12 +1,15 @@
 <template>
     <div @click="dialog = !dialog">
-        <q-dialog v-model="dialog">
+        <q-dialog full-width v-model="dialog">
             <q-card>
-                <q-card-section>
-                    <span class="headline">Details</span>
+                <q-card-section class="row items-center q-pb-none">
+                    <div class="text-h6">Details</div>
+                    <q-space />
+                    <q-btn icon="close" flat round dense v-close-popup />
                 </q-card-section>
+
                 <q-card-section>
-                    {{ text }}
+                    <pre>{{ text }}</pre>
                 </q-card-section>
 
             </q-card>

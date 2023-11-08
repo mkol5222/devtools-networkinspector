@@ -1,7 +1,7 @@
 <template>
   <q-card style="min-height:100vh" class="my-card  text-white full-width">
     <q-card-section>
-      <q-table title="Network Requests" :rows="requests" :columns="columns" row-key="name" :filter="filter">
+      <q-table title="GraphQL Requests" :rows="requests" :columns="columns" row-key="name" :filter="filter">
 
         <template v-slot:body-cell-method="props">
 
@@ -19,6 +19,14 @@
             <div class="row q-gutter-md">
               <CopyTextButton :text="props.value" />
               <TruncatedText :text="props.value" :max-chars="60" />
+            </div>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-graphQLVariables="props">
+          <q-td :props="props">
+            <div class="row q-gutter-md">
+              <CopyTextButton :text="JSON.stringify(props.value, null, 2)" />
+              <TruncatedText :text="JSON.stringify(props.value, null, 2)" :max-chars="60" />
             </div>
           </q-td>
         </template>
@@ -109,6 +117,13 @@ export default defineComponent({
         align: 'left',
         label: 'GraphQL Query',
         field: 'graphQLQuery',
+        sortable: true,
+      },
+      {
+        name: 'graphQLVariables',
+        align: 'left',
+        label: 'GraphQL Variables',
+        field: 'graphQLVariables',
         sortable: true,
       },
       {
